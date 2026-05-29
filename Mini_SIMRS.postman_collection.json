@@ -1,0 +1,701 @@
+{
+	"info": {
+		"name": "Mini SIMRS - Inventaris IT RS",
+		"description": "REST API Sistem Inventaris & Maintenance Perangkat IT Rumah Sakit\n\nDefault credentials:\n- Admin: admin@simrs.test / password\n- Teknisi: budi@simrs.test / password\n- Teknisi: andi@simrs.test / password",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://mini-simrs.test/api",
+			"type": "string"
+		},
+		{
+			"key": "admin_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "teknisi_token",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register - Valid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 201', function() { pm.response.to.have.status(201); });",
+									"var json = pm.response.json();",
+									"pm.test('Has token', function() { pm.expect(json.data.token).to.be.a('string'); });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"User Baru\",\n    \"email\": \"userbaru@simrs.test\",\n    \"password\": \"password\",\n    \"password_confirmation\": \"password\"\n}"
+						},
+						"url": { "raw": "{{base_url}}/register", "host": ["{{base_url}}"], "path": ["register"] }
+					}
+				},
+				{
+					"name": "Register - Email Duplikat (422)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 422', function() { pm.response.to.have.status(422); });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Duplicate\",\n    \"email\": \"admin@simrs.test\",\n    \"password\": \"password\",\n    \"password_confirmation\": \"password\"\n}"
+						},
+						"url": { "raw": "{{base_url}}/register", "host": ["{{base_url}}"], "path": ["register"] }
+					}
+				},
+				{
+					"name": "Login - Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', function() { pm.response.to.have.status(200); });",
+									"var json = pm.response.json();",
+									"if (json.data && json.data.token) { pm.collectionVariables.set('admin_token', json.data.token); }"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@simrs.test\",\n    \"password\": \"password\"\n}"
+						},
+						"url": { "raw": "{{base_url}}/login", "host": ["{{base_url}}"], "path": ["login"] }
+					}
+				},
+				{
+					"name": "Login - Teknisi",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', function() { pm.response.to.have.status(200); });",
+									"var json = pm.response.json();",
+									"if (json.data && json.data.token) { pm.collectionVariables.set('teknisi_token', json.data.token); }"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"budi@simrs.test\",\n    \"password\": \"password\"\n}"
+						},
+						"url": { "raw": "{{base_url}}/login", "host": ["{{base_url}}"], "path": ["login"] }
+					}
+				},
+				{
+					"name": "Login - Password Salah (401)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 401', function() { pm.response.to.have.status(401); });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@simrs.test\",\n    \"password\": \"wrongpassword\"\n}"
+						},
+						"url": { "raw": "{{base_url}}/login", "host": ["{{base_url}}"], "path": ["login"] }
+					}
+				},
+				{
+					"name": "Logout",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', function() { pm.response.to.have.status(200); });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{admin_token}}" }
+						],
+						"url": { "raw": "{{base_url}}/logout", "host": ["{{base_url}}"], "path": ["logout"] }
+					}
+				}
+			]
+		},
+		{
+			"name": "Ruangan",
+			"item": [
+				{
+					"name": "List Ruangan",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', function() { pm.response.to.have.status(200); });",
+									"pm.test('Has data array', function() { pm.expect(pm.response.json().data).to.be.an('array'); });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{admin_token}}" }
+						],
+						"url": { "raw": "{{base_url}}/ruangan", "host": ["{{base_url}}"], "path": ["ruangan"] }
+					}
+				},
+				{
+					"name": "Tambah Ruangan (Admin)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 201', function() { pm.response.to.have.status(201); });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{admin_token}}" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nama\": \"Ruang Operasi\",\n    \"lantai\": 3,\n    \"keterangan\": \"Ruang operasi bedah umum\"\n}"
+						},
+						"url": { "raw": "{{base_url}}/ruangan", "host": ["{{base_url}}"], "path": ["ruangan"] }
+					}
+				},
+				{
+					"name": "Update Ruangan (Admin)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{admin_token}}" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nama\": \"ICU Updated\",\n    \"lantai\": 2,\n    \"keterangan\": \"ICU setelah renovasi\"\n}"
+						},
+						"url": { "raw": "{{base_url}}/ruangan/1", "host": ["{{base_url}}"], "path": ["ruangan", "1"] }
+					}
+				},
+				{
+					"name": "Hapus Ruangan - Masih Ada Perangkat (422)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 422', function() { pm.response.to.have.status(422); });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{admin_token}}" }
+						],
+						"url": { "raw": "{{base_url}}/ruangan/1", "host": ["{{base_url}}"], "path": ["ruangan", "1"] }
+					}
+				},
+				{
+					"name": "Hapus Ruangan - Kosong (200)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{admin_token}}" }
+						],
+						"url": { "raw": "{{base_url}}/ruangan/8", "host": ["{{base_url}}"], "path": ["ruangan", "8"] }
+					}
+				}
+			]
+		},
+		{
+			"name": "Perangkat",
+			"item": [
+				{
+					"name": "List Perangkat",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', function() { pm.response.to.have.status(200); });",
+									"pm.test('Has data', function() { pm.expect(pm.response.json().data).to.be.an('array'); });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{admin_token}}" }
+						],
+						"url": { "raw": "{{base_url}}/perangkat", "host": ["{{base_url}}"], "path": ["perangkat"] }
+					}
+				},
+				{
+					"name": "List Perangkat - Tanpa Token (401)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 401', function() { pm.response.to.have.status(401); });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": { "raw": "{{base_url}}/perangkat", "host": ["{{base_url}}"], "path": ["perangkat"] }
+					}
+				},
+				{
+					"name": "List Perangkat - Filter Ruangan",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{admin_token}}" }
+						],
+						"url": {
+							"raw": "{{base_url}}/perangkat?ruangan_id=1",
+							"host": ["{{base_url}}"],
+							"path": ["perangkat"],
+							"query": [{ "key": "ruangan_id", "value": "1" }]
+						}
+					}
+				},
+				{
+					"name": "List Perangkat - Filter Kondisi",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{admin_token}}" }
+						],
+						"url": {
+							"raw": "{{base_url}}/perangkat?kondisi=rusak_ringan",
+							"host": ["{{base_url}}"],
+							"path": ["perangkat"],
+							"query": [{ "key": "kondisi", "value": "rusak_ringan" }]
+						}
+					}
+				},
+				{
+					"name": "List Perangkat - Filter Jenis",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{admin_token}}" }
+						],
+						"url": {
+							"raw": "{{base_url}}/perangkat?jenis=printer",
+							"host": ["{{base_url}}"],
+							"path": ["perangkat"],
+							"query": [{ "key": "jenis", "value": "printer" }]
+						}
+					}
+				},
+				{
+					"name": "Detail Perangkat + Riwayat",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', function() { pm.response.to.have.status(200); });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{admin_token}}" }
+						],
+						"url": { "raw": "{{base_url}}/perangkat/1", "host": ["{{base_url}}"], "path": ["perangkat", "1"] }
+					}
+				},
+				{
+					"name": "Tambah Perangkat (Admin)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 201', function() { pm.response.to.have.status(201); });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{admin_token}}" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nama\": \"PC Baru Radiologi\",\n    \"jenis\": \"pc\",\n    \"merk\": \"Lenovo IdeaCentre\",\n    \"serial_number\": \"LNV-PC-NEW-001\",\n    \"ruangan_id\": 3,\n    \"kondisi\": \"baik\",\n    \"tanggal_pembelian\": \"2024-01-15\"\n}"
+						},
+						"url": { "raw": "{{base_url}}/perangkat", "host": ["{{base_url}}"], "path": ["perangkat"] }
+					}
+				},
+				{
+					"name": "Tambah Perangkat - Teknisi (403)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 403', function() { pm.response.to.have.status(403); });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{teknisi_token}}" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nama\": \"PC Ilegal\",\n    \"jenis\": \"pc\",\n    \"merk\": \"Unknown\",\n    \"serial_number\": \"ILLEGAL-001\",\n    \"ruangan_id\": 1,\n    \"kondisi\": \"baik\"\n}"
+						},
+						"url": { "raw": "{{base_url}}/perangkat", "host": ["{{base_url}}"], "path": ["perangkat"] }
+					}
+				},
+				{
+					"name": "Update Perangkat (Admin)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{admin_token}}" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nama\": \"PC Pendaftaran 01 - Updated\",\n    \"kondisi\": \"rusak_ringan\"\n}"
+						},
+						"url": { "raw": "{{base_url}}/perangkat/1", "host": ["{{base_url}}"], "path": ["perangkat", "1"] }
+					}
+				},
+				{
+					"name": "Hapus Perangkat (Admin)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{admin_token}}" }
+						],
+						"url": { "raw": "{{base_url}}/perangkat/11", "host": ["{{base_url}}"], "path": ["perangkat", "11"] }
+					}
+				}
+			]
+		},
+		{
+			"name": "Maintenance",
+			"item": [
+				{
+					"name": "List Maintenance",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', function() { pm.response.to.have.status(200); });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{teknisi_token}}" }
+						],
+						"url": { "raw": "{{base_url}}/maintenance", "host": ["{{base_url}}"], "path": ["maintenance"] }
+					}
+				},
+				{
+					"name": "Catat Maintenance (user_id otomatis)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 201', function() { pm.response.to.have.status(201); });",
+									"pm.test('user_id auto', function() { pm.expect(pm.response.json().data.user_id).to.not.be.null; });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{teknisi_token}}" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"perangkat_id\": 7,\n    \"tanggal\": \"2024-06-01\",\n    \"jenis\": \"perbaikan\",\n    \"keterangan\": \"Ganti RAM karena sering hang\",\n    \"biaya\": 350000,\n    \"status\": \"pending\"\n}"
+						},
+						"url": { "raw": "{{base_url}}/maintenance", "host": ["{{base_url}}"], "path": ["maintenance"] }
+					}
+				},
+				{
+					"name": "Update Maintenance - Selesai (update kondisi perangkat)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', function() { pm.response.to.have.status(200); });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{teknisi_token}}" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"selesai\",\n    \"kondisi_setelah\": \"baik\"\n}"
+						},
+						"url": { "raw": "{{base_url}}/maintenance/1", "host": ["{{base_url}}"], "path": ["maintenance", "1"] }
+					}
+				},
+				{
+					"name": "Hapus Maintenance (Admin)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{admin_token}}" }
+						],
+						"url": { "raw": "{{base_url}}/maintenance/1", "host": ["{{base_url}}"], "path": ["maintenance", "1"] }
+					}
+				}
+			]
+		},
+		{
+			"name": "Peminjaman",
+			"item": [
+				{
+					"name": "List Peminjaman",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', function() { pm.response.to.have.status(200); });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{admin_token}}" }
+						],
+						"url": { "raw": "{{base_url}}/peminjaman", "host": ["{{base_url}}"], "path": ["peminjaman"] }
+					}
+				},
+				{
+					"name": "Catat Peminjaman",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 201', function() { pm.response.to.have.status(201); });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{admin_token}}" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"perangkat_id\": 1,\n    \"nama_peminjam\": \"Dr. Siti Aminah\",\n    \"unit_kerja\": \"Poli Umum\",\n    \"tanggal_pinjam\": \"2024-06-10\"\n}"
+						},
+						"url": { "raw": "{{base_url}}/peminjaman", "host": ["{{base_url}}"], "path": ["peminjaman"] }
+					}
+				},
+				{
+					"name": "Peminjaman - Perangkat Sudah Dipinjam (422)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 422', function() { pm.response.to.have.status(422); });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{admin_token}}" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"perangkat_id\": 1,\n    \"nama_peminjam\": \"Orang Lain\",\n    \"unit_kerja\": \"Poli Gigi\",\n    \"tanggal_pinjam\": \"2024-06-11\"\n}"
+						},
+						"url": { "raw": "{{base_url}}/peminjaman", "host": ["{{base_url}}"], "path": ["peminjaman"] }
+					}
+				},
+				{
+					"name": "Pengembalian Perangkat",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', function() { pm.response.to.have.status(200); });",
+									"pm.test('Status dikembalikan', function() { pm.expect(pm.response.json().data.status).to.eql('dikembalikan'); });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{admin_token}}" }
+						],
+						"url": { "raw": "{{base_url}}/peminjaman/1/kembali", "host": ["{{base_url}}"], "path": ["peminjaman", "1", "kembali"] }
+					}
+				},
+				{
+					"name": "Hapus Peminjaman (Admin)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{admin_token}}" }
+						],
+						"url": { "raw": "{{base_url}}/peminjaman/1", "host": ["{{base_url}}"], "path": ["peminjaman", "1"] }
+					}
+				}
+			]
+		}
+	]
+}
