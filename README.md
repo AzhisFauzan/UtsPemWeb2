@@ -159,10 +159,55 @@ Pastikan sistem Anda sudah terinstal:
 
 **1. Clone Repositori**
 Buka terminal/command prompt, lalu jalankan perintah berikut untuk mengkloning repositori ini ke dalam direktori lokal Anda:
-```bash
-git clone [https://github.com/AzhisFauzan/UtsPemWeb2.git](https://github.com/AzhisFauzan/UtsPemWeb2.git)
-
 ```
+git clone [https://github.com/AzhisFauzan/UtsPemWeb2.git](https://github.com/AzhisFauzan/UtsPemWeb2.git)
+```
+
 **2. Masuk ke Direktori Proyek**
+```
+cd UtsPemWeb2
+```
 
+**3. Install Dependensi PHP (Composer)**
+Jalankan perintah ini untuk menginstal semua library dan dependensi Laravel yang dibutuhkan:
+```
+composer install
+```
 
+**4. Konfigurasi Environment (File .env)**
+Salin file konfigurasi bawaan menjadi file .env yang aktif:
+```
+cp .env.example .env
+```
+
+**5. Generate Application Key**
+Buat key unik untuk keamanan aplikasi Laravel Anda:
+```
+php artisan key:generate
+```
+
+**6. Konfigurasi Database**
+
+- Buka aplikasi database client Anda (misalnya phpMyAdmin, DBeaver, dll).
+- Buat database baru (mini_simrs).
+- Buka file .env di text editor Anda (VS Code), lalu sesuaikan konfigurasi koneksi database berikut:
+```
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=mini_simrs   # Ubah sesuai nama database yang baru Anda buat
+DB_USERNAME=root            # Username default XAMPP/Laragon
+DB_PASSWORD=                # Kosongkan jika tidak ada password
+```
+
+**7. Jalankan Migrasi Database**
+Setelah database terhubung, buat struktur tabel beserta datanya (jika ada seeder) menggunakan perintah:
+```
+php artisan migrate
+```
+
+**8. Jalankan Local Development Server**
+Terakhir, nyalakan server bawaan Laravel:
+```
+php artisan serve
+```
