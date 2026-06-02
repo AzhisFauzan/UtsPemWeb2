@@ -141,3 +141,28 @@ Berdasarkan *Foreign Key* (FK) yang dirancang pada database, berikut adalah rela
 
 * **Kendala:** Saat melakukan testing endpoint `Login`, muncul error `Invalid URI "http:///login"` di Postman sehingga tidak bisa mendapatkan token.
 * **Solusi:** Ternyata *environment variable* `{{api_url}}` belum tersimpan (*save*) dan *Current Value*-nya masih kosong. Setelah *value* diisi dengan URL lokal aplikasi dan disimpan, *request* berhasil dijalankan dengan baik.
+
+---
+
+## Langkah Instalasi Lokal
+
+Ikuti langkah-langkah di bawah ini untuk menjalankan proyek **Mini SIMRS - Inventaris & Maintenance IT RS** secara lokal di komputer Anda.
+
+### Persyaratan Sistem
+Pastikan sistem Anda sudah terinstal:
+- **PHP** (Minimal versi 8.2 atau yang sesuai dengan spesifikasi Laravel 12)
+- **Composer** (Untuk manajemen dependensi PHP)
+- **MySQL** (Atau aplikasi bundle seperti XAMPP/Laragon)
+- **Git**
+
+### Cara Instalasi
+
+**1. Clone Repositori**
+Buka terminal/command prompt, lalu jalankan perintah berikut untuk mengkloning repositori ini ke dalam direktori lokal Anda:
+```bash
+git clone [https://github.com/AzhisFauzan/UtsPemWeb2.git](https://github.com/AzhisFauzan/UtsPemWeb2.git)
+
+```
+**2. Masuk ke Direktori Proyek**
+
+
